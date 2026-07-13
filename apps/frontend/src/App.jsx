@@ -16,6 +16,7 @@ import Pricing        from './pages/Pricing'
 import About          from './pages/About'
 import Contact        from './pages/Contact'
 import StartProject   from './pages/StartProject'
+import AdminRedirect  from './pages/AdminRedirect'
 
 // Auth pages
 import Login          from './pages/Login'
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/about"         element={<About />} />
         <Route path="/contact"       element={<Contact />} />
         <Route path="/start-project" element={<StartProject />} />
+        <Route path="/admin-login-redirect" element={<AdminRedirect />} />
 
         <Route path="/login"                    element={<Login />} />
         <Route path="/register"                 element={<Register />} />

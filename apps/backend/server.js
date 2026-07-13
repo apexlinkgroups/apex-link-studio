@@ -14,19 +14,20 @@ const paymentRoutes   = require('./src/routes/paymentRoutes');
 const clientRoutes    = require('./src/routes/clientRoutes');
 
 const app  = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 const requiredEnv = ['MONGO_URI', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 
 if (missingEnv.length) {
   console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
   console.error('Copy apps/backend/.env.example to apps/backend/.env and fill in the required values.');
-  process.exit(1);
+  if (require.main === module) process.exit(1);
 }
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
+  ...(process.env.ALLOWED_ORIGINS || '').split(',').map((origin) => origin.trim()),
   'http://localhost:5173',
   'http://localhost:5174',
 ].filter(Boolean);
@@ -81,11 +82,32 @@ app.use((err, req, res, next) => {
   });
 });
 
-/* ── Database + Server Start ── */
-mongoose.connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log('✅  MongoDB connected');
-    await require('./src/scripts/seed')();   // seed admin on first run
-    app.listen(PORT, () => console.log(`🚀  Server running on port ${PORT}`));
-  })
-  .catch(err => { console.error('❌  DB connection failed:', err.message); process.exit(1); });
+let connectPromise;
+let seedPromise;
+
+async function connectDB() {
+  if (missingEnv.length) {
+    throw new Error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+  }
+
+  if (mongoose.connection.readyState === 1) return mongoose.connection;
+
+  if (!connectPromise) {
+    connectPromise = mongoose.connect(process.env.MONGO_URI).then(async (connection) => {
+      console.log('✅  MongoDB connected');
+      seedPromise ||= require('./src/scripts/seed')();
+      await seedPromise;
+      return connection;
+    });
+  }
+
+  return connectPromise;
+}
+
+if (require.main === module) {
+  connectDB()
+    .then(() => app.listen(PORT, () => console.log(`🚀  Server running on port ${PORT}`)))
+    .catch(err => { console.error('❌  DB connection failed:', err.message); process.exit(1); });
+}
+
+module.exports = { app, connectDB };
