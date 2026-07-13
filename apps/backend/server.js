@@ -67,11 +67,13 @@ app.use('/api/payments',  paymentRoutes);
 app.use('/api/clients',   clientRoutes);
 
 /* ── Health Check ── */
-app.get('/', (req, res) => res.json({
+const apiInfo = (req, res) => res.json({
   success: true,
   name: 'APEX LINK Studio API',
   health: '/api/health',
-}));
+});
+
+app.get(['/', '/api', '/api/index.js', '/api/index.js/'], apiInfo);
 app.get('/api/health', (req, res) => res.json({ status: 'OK', time: new Date() }));
 
 /* ── 404 ── */
