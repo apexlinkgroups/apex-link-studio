@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 
 // Layout
@@ -35,11 +35,14 @@ function PrivateRoute({ children }) {
 
 export default function App() {
   const { loading } = useAuth()
+  const { pathname } = useLocation()
+  const isStandaloneHome = pathname === '/'
+
   if (loading) return <Loader />
 
   return (
     <>
-      <Navbar />
+      {!isStandaloneHome && <Navbar />}
       <Routes>
         <Route path="/"              element={<Home />} />
         <Route path="/services"      element={<Services />} />
@@ -65,7 +68,7 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <Footer />
+      {!isStandaloneHome && <Footer />}
     </>
   )
 }
