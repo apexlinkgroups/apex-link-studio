@@ -1,0 +1,23 @@
+{
+  "name": "apex-studio-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "APEX LINK Studio frontend, admin panel, and backend monorepo.",
+  "workspaces": [
+    "apps/frontend",
+    "apps/admin",
+    "apps/backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
+    "dev:frontend": "npm run dev --workspace apps/frontend",
+    "dev:admin": "npm run dev --workspace apps/admin",
+    "dev:backend": "npm run dev --workspace apps/backend",
+    "build": "npm run build --workspace apps/frontend && npm run build --workspace apps/admin",
+    "start": "npm run start --workspace apps/backend",
+    "seed": "npm run seed --workspace apps/backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
