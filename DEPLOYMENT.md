@@ -43,6 +43,12 @@ Health check:
 https://your-backend.vercel.app/api/health
 ```
 
+The backend root should also return a small API JSON response:
+
+```text
+https://your-backend.vercel.app/
+```
+
 ## 2. Frontend
 
 Create a Vercel project with:
@@ -96,3 +102,13 @@ Copy the Stripe webhook signing secret into `STRIPE_WEBHOOK_SECRET`.
 5. Deploy frontend.
 6. Update backend `CLIENT_URL`, `ADMIN_URL`, and `ALLOWED_ORIGINS` with the final Vercel URLs.
 7. Redeploy backend after updating CORS variables.
+
+## If You See Vercel 404: NOT_FOUND
+
+Check the Vercel project's Root Directory first:
+
+- Backend project must use `apps/backend`
+- Frontend project must use `apps/frontend`
+- Admin project must use `apps/admin`
+
+If the backend opens but `/api/health` does not, redeploy after confirming all backend environment variables are set.
